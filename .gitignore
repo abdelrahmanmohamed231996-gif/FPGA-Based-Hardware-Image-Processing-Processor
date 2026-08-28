@@ -1,23 +1,19 @@
-# ignore ModelSim generated files and directories (temp files and so on)
-[_@]*
+# Vivado Files
+*.jou
+*.log
+*.pb
+*.wdb
+*.xpr
+.Xil/
+project_*/
 
-# ignore compilation output of ModelSim
-*.mti
-*.dat
-*.dbs
-*.psm
-*.bak
-*.cmp
-*.jpg
-*.html
-*.bsf
-
-# ignore simulation output of ModelSim
-wlf*
+# QuestaSim / ModelSim Files
+work/
 *.wlf
-*.vstf
-*.ucdb
-cov*/
-transcript*
-sc_dpiheader.h
-vsim.dbg
+*.vcd
+transcript
+*.mti
+
+# General OS Files
+.DS_Store
+Thumbs.db
