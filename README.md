@@ -28,9 +28,9 @@ The processed images are output directly to a monitor using a custom-designed **
 4. **Main Controller/FSM:** Orchestrates data flow between memory, the convolution core, and the VGA output.
 
 ## 👥 Team
-* **Abdelrahman**
-* **Ramadan**
-* **Ayman**
+* **Abdelrahman Hamad**
+* **Mohamed Emad**
+* **Rahama Essam**
 
 ---
 *Developed as part of practical RTL design and digital IC verification endeavors.*
