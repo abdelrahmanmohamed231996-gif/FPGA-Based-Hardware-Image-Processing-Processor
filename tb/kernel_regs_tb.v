@@ -2,7 +2,7 @@ module tb ();
 parameter [7:0] COEF_WIDTH=8;
 reg clk,rst_n;
 reg filter0_sel,filter1_sel,filter2_sel;
-wire signed   [0:7] k0,k1,k2,k3,k4,k5,k6,k7,k8;
+    wire signed   [0: COEF_WIDTH-1] k0,k1,k2,k3,k4,k5,k6,k7,k8;
 
     k_regs #(COEF_WIDTH) dut(clk,rst_n,filter0_sel,filter1_sel,filter2_sel,k0,k1,k2,k3,k4,k5,k6,k7,k8);
 
