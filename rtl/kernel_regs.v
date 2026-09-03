@@ -1,12 +1,12 @@
 module k_regs(clk,rst_n,filter0_sel,filter1_sel,filter2_sel,k0,k1,k2,k3,k4,k5,k6,k7,k8);
-    parameter [7:0] COEF_WIDTH=8;
+parameter [7:0] COEF_WIDTH=8,PIXEL_WIDTH=8;
 input  wire clk,rst_n;
 input  wire filter0_sel,filter1_sel,filter2_sel;
-    output reg signed [0:COEF_WIDTH-1] k0,k1,k2,k3,k4,k5,k6,k7,k8;
-reg signed [0:7]  filter0 [0:8] ;
-reg signed [0:7] filter1  [0:8] ;
-reg signed [0:7] filter2 [0:8];
-reg signed [0:7] filter3 [0:8];
+output reg signed [0:COEF_WIDTH-1] k0,k1,k2,k3,k4,k5,k6,k7,k8;
+reg signed [0:PIXEL_WIDTH-1]  filter0 [0:8] ;
+reg signed [0:PIXEL_WIDTH-1] filter1  [0:8] ;
+reg signed [0:PIXEL_WIDTH-1] filter2 [0:8];
+reg signed [0:PIXEL_WIDTH-1] filter3 [0:8];
 integer i;
 
 always @(posedge clk) begin
