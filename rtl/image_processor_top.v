@@ -22,7 +22,7 @@ parameter ADDR_WIDTH = 8;
 parameter TILE_COLS = 16;
 parameter TILE_ROWS = 16;
 parameter IMG_SIZE = 16;
-parameter PRODUCT_WIDTH = 16;
+parameter PRODUCT_WIDTH = 17;
 parameter SUM_WIDTH = 20;
 parameter KERNEL_WIDTH = 3;
 parameter WIDTH = 17;
@@ -30,40 +30,39 @@ parameter WIDTH = 17;
 
 //Input Interface — pixel_rx_if
 
-// pixel_rx_if #(
-//        .WIDTH()
-//   ) m0 (
-//        .clk(),
-//        .rst_n(),
-//        .pixel_in(),
-//        .pixel_valid_in(),
-//        .frame_start(),
-//        .pixel_out(),
-//        .pixel_valid_out(),
-//        .row_cnt(),
-//        .col_cnt
+// pixel_rx_if ) m0 (
+//        .clk(clk),
+//        .rst_n(rst_n),
+//        .pixel_in(pixel_in),
+//        .pixel_valid_in(pixel_valid_in),
+//        .frame_start(frame_start),
+//        .pixel_out(pixel_out_w),
+//        .pixel_valid_out(pixel_valid_out_w),
+//        .row_cnt(row_cnt_w),
+//        .col_cnt(col_cnt_w)
 //   );
 
-// reg  pixel_valid_out;
-// reg  [3:0] row_cnt,col_cnt;
-// reg  [PIXEL_WIDTH-1:0] pixel_out;
-// reg pixel_out_valid,mem_wr_en;
-// reg [ PIXEL_WIDTH-1:0] pixel_out_output_assembly,mem_wr_addr;
-// wire write_en;
-// wire [7:0] write_addr,write_data;
-
-// wire [7:0]  rd_data,rd_addr;
+wire [7:0] pixel_out_w;
+wire pixel_valid_out_w;
+wire [3:0] row_cnt_w;
+wire [3:0] col_cnt_w;
 
 
-//Input Interface — pixel_rx_if
 
 
 //Line Buffers — line_buffer_fifo
 
-// line_buffer_fifo #(
-//        .WIDTH()
+// line_buffer_3x3 #(
+//     .DATA_WIDTH(),
+//     .IMAGE_HEIGHT(),
+//     .IMAGE_WIDTH(),
+//     .WINDOW_WIDTH(),
+//     .WINDOW_HEIGHT()
 //     ) m1 (
-
+       .clk(clk),
+       .rst_n(rst_n),
+       .valid_in(pixel_valid_out_w),
+       .pixel_in(pixel_out_w)
 //     );
 
 //Window Generator — window_gen
@@ -72,9 +71,9 @@ parameter WIDTH = 17;
        .PIXEL_WIDTH(PIXEL_WIDTH),
        .TILE_ROWS(),
        .TILE_COLS() 
-       ) m3(
-       .clk(),
-       .rst_n(),
+       ) m2(
+       .clk(clk),
+       .rst_n(rst_n),
        .row_top(),
        .row_mid(),
        .row_bot(),
@@ -90,48 +89,146 @@ parameter WIDTH = 17;
 
 
 //Kernel Register Bank — kernel_regs
-k_regs  #(COEF_WIDTH,PIXEL_WIDTH) m4(clk,rst_n,filter0_sel,filter1_sel,filter2_sel,k0,k1,k2,k3,k4,k5,k6,k7,k8);
 
-//Multiplier Array — mac_mult_array
+k_regs  #(
+       .CEF_WIDTH(),
+       .PIXEL_WIDTH()
+       ) m3 (
+       .clk(clk),
+       .rst_n(rst_n),
+       .filter0_sel(),
+       .filter1_sel(),
+       .filter2_sel(),
+       .k0(),
+       .k1(),
+       .k2(),
+       .k3(),
+       .k4(),
+       .k5(),
+       .k6(),
+       .k7(),
+       .k8()
+       );
 
-mac_mult_array #(PIXEL_WIDTH,PRODUCT_WIDTH,KERNEL_WIDTH) m5(clk,rst_n,window_out,{k8,k7,k6,k5,k4,k3,k2,k1,k0}
-,win_valid,out_row,out_col,prod,valid_out,out_row_d,out_col_d);
+//Multipler Array — mac_mult_array
+
+mac_mult_array #(
+       .PIXEL_WIDTH(),
+       .PRODUCT_WIDTH(),
+       .KERNEL_WIDTH()
+       ) m4 (
+       .clk(clk),
+       .rst_n(rst_n),
+       .window_out(),
+       .k({k8,k7,k6,k5,k4,k3,k2,k1,k0}),
+       .win_valid(),
+       .out_row(),
+       .out_col(),
+       .prod(),
+       .valid_out(),
+       .out_row_d(),
+       .out_col_d()
+       );
 
 //Adder Tree — adder_tree
 
-adder_tree #( WIDTH ) m6 (clk,rst_n,valid_out, out_row_d, out_col_d,prod[16:0],prod[33:17],prod[49:34],
-prod[65:50],prod[81:66],prod[97:82],prod[113:98],prod[129:114],prod[145:130],pixel_out,valid_out,out_row_f,out_col_f);
+adder_tree #(
+       .WIDTH()
+        ) m5 (
+       .clk(clk),
+       .rst_n(rst_n),
+       .valid_out(),
+       .out_row_d(),
+       .out_col_d(),
+       .ds(prod[16:0]),
+       .DS(prod[33:17]),
+       .dws(prod[49:34]),
+       .swq(prod[65:50]),
+       .wq(prod[81:66]),
+       .wq(prod[97:82]),
+       .qw(prod[113:98]),
+       .wq(prod[129:114]),
+       .wq(prod[145:130]),
+       .pixel_out(),
+       .valid_out(),
+       .out_row_f(),
+       .out_col_f()
+       );
+
+
 //Output Assembly — output_assembly
 
-
-output_ass #(PIXEL_WIDTH,SUM_WIDTH) m7(clk,rst_n,pixel_out,valid_out,out_row_f,out_col_f,pixel_out,pixel_out_valid,mem_wr_en,mem_wr_addr);
+output_ass #(
+       .PIXEL_WIDTH(),
+       .SUM_WIDTH()
+       ) m6 (
+       .clk(clk),
+       .rst_n(rst_n),
+       .pixel_out(),
+       .valid_out(),
+       .out_row_f(),
+       .out_col_f(),
+       .pixel_out(),
+       .pixel_out_valid(),
+       .mem_wr_en(),
+       .mem_wr_addr()
+       );
 
 
 //Output Interface — output_if
 
 
 
-out_if #(PIXEL_WIDTH) m8(rst_n,pixel_out,pixel_out_valid,mem_wr_en,
-mem_wr_addr,write_data,
-write_en,write_addr);
+out_if #(
+       .PIXEL_WIDTH()
+       ) m7 (
+       .rst_n(rst_n),
+       .pixel_out(),
+       .pixel_out_valid(),
+       .mem_wr_en(),
+       .mem_wr_addr(),
+       .write_data(),
+       .write_en(),
+       .write_addr()
+       );
 
 
 //Frame Buffer — dual_port_bram
 	
 	
 
-fr_buf #(PIXEL_WIDTH,ADDR_WIDTH) m9 (clk,write_en,write_addr,write_data,VGA_CLK,rd_addr,rd_data);
+fr_buf #(
+       .PIXEL_WIDTH(),
+       .ADDR_WIDTH()
+       ) m8 (
+       .clk(clk),
+       .write_en(),
+       .write_addr(),
+       .write_data(),
+       .VGA_CLK(),
+       .rd_addr(),
+       .rd_data()
+       );
 
 
 
 //VGA Controller — vga_ctrl
 
-vga_controller #(s0,s1,s2,s3) m10(VGA_CLK,clk,rst_n,VGA_HS,VGA_VS,v_on, VGA_R,VGA_G,VGA_B,VGA_BLANK_N,VGA_SYNC_N,rd_data,
-rd_addr);
-
-
-
-
+vga_controller m9 ( 
+       .VGA_CLK(),
+       .clk(clk),
+       .rst_n(rst_n),
+       .VGA_HS(),
+       .VGA_VS(),
+       .v_on(),
+       .VGA_R(),
+       .VGA_G(),
+       .VGA_B(),
+       .VGA_BLANK_N(),
+       .VGA_SYNC_N(),
+       .rd_data(),
+       .rd_addr()
+       );
 
 
 
