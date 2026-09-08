@@ -59,10 +59,10 @@ wire [3:0] col_cnt_w;
 //     .WINDOW_WIDTH(),
 //     .WINDOW_HEIGHT()
 //     ) m1 (
-       .clk(clk),
-       .rst_n(rst_n),
-       .valid_in(pixel_valid_out_w),
-       .pixel_in(pixel_out_w)
+//     .clk(clk),
+//     .rst_n(rst_n),
+//     .valid_in(pixel_valid_out_w),
+//     .pixel_in(pixel_out_w)
 //     );
 
 //Window Generator — window_gen
