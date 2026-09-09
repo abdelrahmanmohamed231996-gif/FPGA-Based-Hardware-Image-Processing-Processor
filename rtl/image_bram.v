@@ -7,14 +7,14 @@ module image_bram (
     output reg  [7:0] row_mid,
     output reg  [7:0] row_bot
 );
-  reg [7:0] image_mem_top[0:255];
-  reg [7:0] image_mem_mid[0:255];
-  reg [7:0] image_mem_bot[0:255];
+  (* ramstyle = "M10K" *)reg [7:0] image_mem_top[0:255];
+  (* ramstyle = "M10K" *)reg [7:0] image_mem_mid[0:255];
+  (* ramstyle = "M10K" *)reg [7:0] image_mem_bot[0:255];
 
   initial begin
-    $readmemh("image.mem", image_mem_top);
-    $readmemh("image.mem", image_mem_mid);
-    $readmemh("image.mem", image_mem_bot);
+    $readmemh("../mem_files/image.mem", image_mem_top);
+    $readmemh("../mem_files/image.mem", image_mem_mid);
+    $readmemh("../mem_files/image.mem", image_mem_bot);
   end
 
 

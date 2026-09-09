@@ -2,7 +2,6 @@ module mac_mult_array #(
     parameter PIXEL_WIDTH   = 8,
     parameter PRODUCT_WIDTH = 17,
     parameter KERNEL_WIDTH  = 3
-
 ) (
     input wire clk,
     input wire rst_n,
@@ -22,7 +21,6 @@ module mac_mult_array #(
   reg [3:0] out_row_reg;
   reg [3:0] out_col_reg;
 
-
   signed_multiply_with_input_and_output_registers #(
       .WIDTH(PIXEL_WIDTH)
   ) mult_inst1 (
@@ -40,6 +38,7 @@ module mac_mult_array #(
       .datab(k[15:8]),
       .dataout(prod[33:17])
   );
+
   signed_multiply_with_input_and_output_registers #(
       .WIDTH(PIXEL_WIDTH)
   ) mult_inst3 (
@@ -48,6 +47,7 @@ module mac_mult_array #(
       .datab(k[23:16]),
       .dataout(prod[50:34])
   );
+
   signed_multiply_with_input_and_output_registers #(
       .WIDTH(PIXEL_WIDTH)
   ) mult_inst4 (
@@ -102,25 +102,23 @@ module mac_mult_array #(
       .dataout(prod[152:136])
   );
 
-
+  // Unconditional pipeline registers matching the multiplier's 1-cycle latency
   always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-      valid_out <= 1'b0;
-      out_row_d <= 4'b0;
-      out_col_d <= 4'b0;
-
-    end else if (valid_in) begin
-      valid_out <= valid_reg;
-      out_row_d <= out_row_reg;
-      out_col_d <= out_col_reg;
-    end
-  end
-
-  always @(posedge clk) begin
-    if (valid_in) begin
+      valid_reg   <= 1'b0;
+      out_row_reg <= 4'b0;
+      out_col_reg <= 4'b0;
+      valid_out   <= 1'b0;
+      out_row_d   <= 4'b0;
+      out_col_d   <= 4'b0;
+    end else begin
       valid_reg   <= valid_in;
       out_row_reg <= out_row;
       out_col_reg <= out_col;
+
+      valid_out   <= valid_reg;
+      out_row_d   <= out_row_reg;
+      out_col_d   <= out_col_reg;
     end
   end
 
