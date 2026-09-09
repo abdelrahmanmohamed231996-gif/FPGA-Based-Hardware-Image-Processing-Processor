@@ -41,11 +41,11 @@ module vga_controller (
 
 
 
-   pll ins_pll (
-  		  ref_clk,   //  refclk.clk
-  		  ~rst_n,      //   reset.reset
-  		   vga_clk  // outclk0.clk
-  	);
+  //  pll ins_pll (
+  // 		  ref_clk,   //  refclk.clk
+  // 		  ~rst_n,      //   reset.reset
+  // 		   vga_clk  // outclk0.clk
+  // 	);
 
 
 
