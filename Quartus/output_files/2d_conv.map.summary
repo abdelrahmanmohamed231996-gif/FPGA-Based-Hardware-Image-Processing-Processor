@@ -1,0 +1,17 @@
+Analysis & Synthesis Status : Successful - Wed Sep  9 10:16:30 2026
+Quartus Prime Version : 25.1std.0 Build 1129 10/21/2025 SC Lite Edition
+Revision Name : 2d_conv
+Top-level Entity Name : system_top
+Family : Cyclone V
+Logic utilization (in ALMs) : N/A
+Total registers : 525
+Total pins : 35
+Total virtual pins : 0
+Total block memory bits : 8,240
+Total DSP Blocks : 5
+Total HSSI RX PCSs : 0
+Total HSSI PMA RX Deserializers : 0
+Total HSSI TX PCSs : 0
+Total HSSI PMA TX Serializers : 0
+Total PLLs : 1
+Total DLLs : 0

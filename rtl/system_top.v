@@ -1,6 +1,6 @@
 module system_top (
     input wire clk,         // System clock for processing pipeline
-    input wire vga_clk_in,  // Pixel clock for the VGA display
+// input wire vga_clk_in,  // Pixel clock for the VGA display    
     input wire rst_n,
 
     // Kernel Selection
@@ -8,7 +8,8 @@ module system_top (
     input wire filter1_sel,
     input wire filter2_sel,
 
-    // VGA Outputs
+    // VGA Output
+    output wire       vga_clk_out ,
     output wire       h_sync,
     output wire       v_sync,
     output wire       v_on,
@@ -42,6 +43,8 @@ module system_top (
   // fr_buf to vga_controller
   wire        [ 7:0] vga_rd_addr;
   wire        [ 7:0] vga_rd_data;
+  //vga//
+  wire vga_clk_w;   // pixel clock, driven OUT of vga_controller (PLL inside it)
 
   // -----------------------------------------------------------------
   // 1. Convolution Engine
@@ -105,7 +108,7 @@ module system_top (
       .write_addr(fr_write_addr),
       .write_data(fr_write_data),
 
-      .rd_clk (vga_clk_in),
+      .rd_clk (vga_clk_w),  // Driven by vga_controller's output clock
       .rd_addr(vga_rd_addr),
       .rd_data(vga_rd_data)
   );
@@ -114,7 +117,7 @@ module system_top (
   // 5. VGA Controller
   // -----------------------------------------------------------------
   vga_controller u_vga_controller (
-      .vga_clk(vga_clk_in),  // Driven by top-level input
+      .vga_clk(vga_clk_w),  // Driven by vga_controller's output clock
       .ref_clk(clk),
       .rst_n(rst_n),
       .rd_data(vga_rd_data),
@@ -128,5 +131,7 @@ module system_top (
       .vga_blank_N(vga_blank_N),
       .vga_sync_N(vga_sync_N)
   );
+
+  assign vga_clk_out = vga_clk_w;
 
 endmodule
