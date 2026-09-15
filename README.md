@@ -62,7 +62,7 @@ line buffer.
 | `image_prep/` | Python helpers (`make_test_image.py`, `img_to_mem.py`) to generate/convert a test image into a `.mem` file, plus a sample image. |
 | `Quartus/` | Quartus II project (`2d_conv.qpf`/`.qsf`), pin assignment scripts, and synthesis/fitter output (`output_files/`). Top-level entity: `system_top`. |
 | `pll/` | Generated PLL IP core (Quartus megafunction) used for clocking. |
-| `docs/` | Project documentation (work in progress). |
+| `docs/` | Project documentation: `2D_Convolution_Technical_Design_Proposal_v0.1.pdf` and `Image_Processing_Specs.pdf`. |
 | `synth/` | Synthesis-related notes/artifacts (work in progress). |
 
 ## Getting started
