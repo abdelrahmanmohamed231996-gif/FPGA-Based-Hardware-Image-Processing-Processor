@@ -1,36 +1,55 @@
-# FPGA-Based-Hardware-Image-Processing-Processor
+# MATLAB Golden Model - 2D Convolution FPGA
 
-## 📌 Project Overview
-This repository contains the RTL implementation of a **Real-Time 2D Convolution Hardware Accelerator**. Designed entirely in **Verilog HDL**, the system is optimized for **FPGA** deployment to perform on-the-fly image filtering (e.g., Edge Detection, Sharpening, Blurring) without relying on a general-purpose CPU.
+Run `golden_model_main.m`.
 
-The processed images are output directly to a monitor using a custom-designed **VGA Display Controller**, showcasing a complete end-to-end hardware system.
+Baseline from the project specification:
+- 16x16 grayscale input
+- 8-bit unsigned pixels
+- 3x3 window
+- 3x3 signed kernel
+- stride 1
+- VALID/no padding
+- kernel is not spatially flipped
+- output = 14x14
 
-## 🚀 Key Features
-* **Real-Time Processing:** Hardware-accelerated MAC (Multiply-Accumulate) units for high-throughput pixel computation.
-* **FPGA Proven:** Fully synthesizable RTL design targeted and verified on FPGA hardware.
-* **VGA Interface:** Integrated VGA sync generator to display the filtered video/image stream directly to a screen.
-* **Optimized Memory Architecture:** Utilizes Line Buffers / Shift Registers to handle image kernel windowing efficiently.
-* **Industry-Standard Tools:** Verification using QuestaSim and Synthesis/Implementation via Xilinx Vivado.
+## What goes to the FPGA?
 
-## 📂 Repository Structure
-```text
-├── docs/          # Architecture diagrams, block designs, and documentation
-├── rtl/           # Synthesizable Verilog source files (MAC, Line Buffers, VGA Controller)
-├── tb/            # Testbenches for module-level and system-level verification
-├── scripts/       # TCL scripts for automation
-└── synth/         # Synthesis logs and reports (Ignored in Git)
-```
+The MATLAB output is generated as a file; MATLAB itself is NOT synthesized.
 
-## 🛠️ Core Modules 
-1. **VGA Controller:** Generates H-Sync, V-Sync, and coordinates pixel data output to the monitor.
-2. **Line Buffer:** Manages row data caching to supply a 3x3 (or NxN) window to the convolution engine.
-3. **MAC Engine (Multiply-Accumulate):** The arithmetic core applying the convolution kernel weights to the image pixels.
-4. **Main Controller/FSM:** Orchestrates data flow between memory, the convolution core, and the VGA output.
+`input_image.mem`
+- input pixels for the FPGA convolution RTL.
 
-## 👥 Team
-* **Abdelrahman Hamad**
-* **Mohamed Emad**
-* **Rahama Essam**
+`kernel_rom.mem`
+- all pre-stored 3x3 filters.
+- FPGA switches/software select one filter.
+- This replaces the old example signals `kernel_load`, `kernel_addr`, `kernel_data`.
 
----
-*Developed as part of practical RTL design and digital IC verification endeavors.*
+`golden_output_raw.mem`
+- MATLAB expected MAC result, signed two's-complement.
+- Put this into a Golden/Reference ROM or BRAM if you want the FPGA to compare RTL output against MATLAB internally.
+
+`golden_output_display.mem`
+- 8-bit saturated result for Frame Buffer/VGA display tests.
+
+## FPGA verification
+
+MATLAB:
+    input_image.mem + kernel_rom.mem + golden_output_raw.mem
+
+FPGA:
+    Input BRAM -> 3x3 line buffer/window -> selected kernel -> MAC -> RTL output
+                                                              |
+                                                              v
+                                                        Comparator
+                                                              ^
+                                                              |
+                                                     Golden BRAM
+
+If comparison is on FPGA:
+- RTL output = ACTUAL
+- golden_output_raw.mem = EXPECTED
+
+If display is also needed:
+- RTL output -> Output Writer -> Frame Buffer -> VGA -> Monitor
+
+The project documents recommend the preloaded `.mem`/test-vector method as the core input method and define MATLAB as an independent golden reference.
