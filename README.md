@@ -11,29 +11,11 @@ that BRAM every cycle to build each sliding window, then runs it through a
 selectable kernel → MAC array → adder tree, and can display the filtered
 result live over VGA.
 
-## Pipeline overview
+## Architecture
 
-```
-                 ┌────────────────────────────┐
-                 │   Image BRAM (3 banks)      │
-                 │   top / mid / bot rows      │
-                 └──────────────┬──────────────┘
-                                 │  addr_gen: row-2 / row-1 / row
-                                 ▼
-                        Window generator
-                  (3x3-wide column register,
-                   built from the 3 BRAM reads)
-                                 │
-             Kernel select ──▶ MAC array ──▶ Adder tree
-                                 │
-                         Output assembly
-                                 │
-              ┌──────────────────┴──────────────────┐
-              ▼                                      ▼
-       Frame buffer ──▶ VGA controller          RTL vs. Golden
-                                                  comparator
-                                                (MATLAB model)
-```
+![System architecture](docs/diagrams/architecture.png)
+
+Editable source: [`docs/diagrams/architecture.drawio`](docs/diagrams/architecture.drawio) (open with [draw.io](https://app.diagrams.net/)).
 
 No line-buffer FIFOs or image streaming are used. The image is loaded
 whole into three parallel BRAM instances (`image_bram.v`), each holding a
@@ -62,7 +44,7 @@ line buffer.
 | `image_prep/` | Python helpers (`make_test_image.py`, `img_to_mem.py`) to generate/convert a test image into a `.mem` file, plus a sample image. |
 | `Quartus/` | Quartus II project (`2d_conv.qpf`/`.qsf`), pin assignment scripts, and synthesis/fitter output (`output_files/`). Top-level entity: `system_top`. |
 | `pll/` | Generated PLL IP core (Quartus megafunction) used for clocking. |
-| `docs/` | Project documentation: `2D_Convolution_Technical_Design_Proposal_v0.1.pdf` and `Image_Processing_Specs.pdf`. |
+| `docs/` | Project documentation: `2D_Convolution_Technical_Design_Proposal_v0.1.pdf`, `Image_Processing_Specs.pdf`, and `diagrams/` (system architecture diagram, `.png` + editable `.drawio` source). |
 | `synth/` | Synthesis-related notes/artifacts (work in progress). |
 
 ## Getting started
