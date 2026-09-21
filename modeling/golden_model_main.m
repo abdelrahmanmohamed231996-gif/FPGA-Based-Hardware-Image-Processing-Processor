@@ -37,7 +37,8 @@ PADDING     = 'VALID';
 % 6 = emboss
 % 7 = bottom_sobel
 % 8 = outline
-FILTER_SELECT = 2;
+FILTER_SELECT =8 ;
+
 
 % Signed accumulator width
 ACC_BITS = 20;
@@ -315,12 +316,9 @@ fclose(fid);
 %% RTL COMPARISON
 
 RTL_FILE = fullfile(OUT_DIR,'rtl_output.mem');
-
-
 fprintf('\n============================================\n');
 fprintf('RTL vs MATLAB GOLDEN\n');
 fprintf('============================================\n');
-
 
 if exist(RTL_FILE,'file')
 
@@ -328,11 +326,8 @@ if exist(RTL_FILE,'file')
 
     golden = int64(golden_raw(:));
 
-
     fprintf('Golden outputs = %d\n', numel(golden));
     fprintf('RTL outputs    = %d\n', numel(rtl));
-
-
     if numel(rtl) ~= numel(golden)
 
         fprintf('FAIL: Output count mismatch.\n');
@@ -340,19 +335,13 @@ if exist(RTL_FILE,'file')
     else
 
         bad = find(rtl(:) ~= golden(:));
-
-
         fprintf('Mismatches = %d\n', numel(bad));
 
-
         if isempty(bad)
-
             fprintf('\nPASS: RTL exactly matches MATLAB Golden Model.\n');
 
         else
-
             fprintf('\nFAIL: RTL does not match MATLAB Golden Model.\n');
-
             fprintf('\nFirst mismatches:\n');
 
 
